@@ -32,8 +32,8 @@ from phalp.utils.utils_dataset import process_image, process_mask
 from phalp.utils.utils_detectron2 import (DefaultPredictor_Lazy,
                                           DefaultPredictor_with_RPN)
 from phalp.utils.utils_download import cache_url
-from phalp.visualize.postprocessor import Postprocessor
-from phalp.visualize.visualizer import Visualizer
+#from phalp.visualize.postprocessor import Postprocessor
+#from phalp.visualize.visualizer import Visualizer
 
 log = get_pylogger(__name__)
 
@@ -59,7 +59,7 @@ class PHALP(nn.Module):
         self.setup_detectron2()
         
         # create a visualizer
-        self.setup_visualizer()
+        #self.setup_visualizer()
         
         # move to device
         self.to(self.device)
@@ -118,13 +118,13 @@ class PHALP(nn.Module):
         metric  = nn_matching.NearestNeighborDistanceMetric(self.cfg, self.cfg.phalp.hungarian_th, self.cfg.phalp.past_lookback)
         self.tracker = Tracker(self.cfg, metric, max_age=self.cfg.phalp.max_age_track, n_init=self.cfg.phalp.n_init, phalp_tracker=self, dims=[4096, 4096, 99])  
         
-    def setup_visualizer(self):
-        log.info("Setting up Visualizer...")
-        self.visualizer = Visualizer(self.cfg, self.HMAR)
+    #def setup_visualizer(self):
+    #    log.info("Setting up Visualizer...")
+    #    self.visualizer = Visualizer(self.cfg, self.HMAR)
     
-    def setup_postprocessor(self):
-        # by default this will not be initialized
-        self.postprocessor = Postprocessor(self.cfg, self)
+    #def setup_postprocessor(self):
+    #    # by default this will not be initialized
+    #    self.postprocessor = Postprocessor(self.cfg, self)
 
     def default_setup(self):
         # create subfolders for saving additional results
@@ -137,7 +137,7 @@ class PHALP(nn.Module):
             pass
         
     def track(self):
-        
+        self.cfg.render.enable = False
         eval_keys       = ['tracked_ids', 'tracked_bbox', 'tid', 'bbox', 'tracked_time']
         history_keys    = ['appe', 'loca', 'pose', 'uv'] if self.cfg.render.enable else []
         prediction_keys = ['prediction_uv', 'prediction_pose', 'prediction_loca'] if self.cfg.render.enable else []
@@ -185,6 +185,7 @@ class PHALP(nn.Module):
                 measurments               = [img_height, img_width, new_image_size, left, top]
                 self.cfg.phalp.shot       = 1 if t_ in list_of_shots else 0
 
+                self.cfg.render.enable = False
                 if(self.cfg.render.enable):
                     # reset the renderer
                     # TODO: add a flag for full resolution rendering
@@ -206,6 +207,7 @@ class PHALP(nn.Module):
 
                 ############ record the results ##############
                 final_visuals_dic.setdefault(frame_name, {'time': t_, 'shot': self.cfg.phalp.shot, 'frame_path': frame_name})
+                self.cfg.render.enable = False
                 if(self.cfg.render.enable): final_visuals_dic[frame_name]['frame'] = image_frame
                 for key_ in visual_store_: final_visuals_dic[frame_name][key_] = []
                 
@@ -244,6 +246,7 @@ class PHALP(nn.Module):
                                 for pkey_ in prediction_keys: final_visuals_dic[frame_name_][pkey_].append(track_data_pred_[pkey_.split('_')[1]][-1])
 
                 ############ save the video ##############
+                self.cfg.render.enable = False
                 if(self.cfg.render.enable and t_>=self.cfg.phalp.n_init):                    
                     d_ = self.cfg.phalp.n_init+1 if(t_+1==len(list_of_frames)) else 1
                     for t__ in range(t_, t_+d_):

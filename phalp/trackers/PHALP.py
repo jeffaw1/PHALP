@@ -659,9 +659,9 @@ class PHALP(nn.Module):
             os.makedirs(os.path.join(CACHE_DIR, "phalp/3D/models/smpl"), exist_ok=True)
             #os.system('wget https://github.com/classner/up/raw/master/models/3D/basicModel_neutral_lbs_10_207_0_v1.0.0.pkl')
 
-            convert_pkl('/kaggle/input/smpl-neutral/basicModel_neutral_lbs_10_207_0_v1.0.0.pkl')
-            os.system('rm basicModel_neutral_lbs_10_207_0_v1.0.0.pkl')
-            os.system('mv basicModel_neutral_lbs_10_207_0_v1.0.0_p3.pkl ' + smpl_path)
+            #convert_pkl('/kaggle/input/smpl-neutral/basicModel_neutral_lbs_10_207_0_v1.0.0.pkl')
+            #os.system('rm basicModel_neutral_lbs_10_207_0_v1.0.0.pkl')
+            #os.system('mv basicModel_neutral_lbs_10_207_0_v1.0.0_p3.pkl ' + smpl_path)
 
         additional_urls = additional_urls if additional_urls is not None else {}
         download_files = {
